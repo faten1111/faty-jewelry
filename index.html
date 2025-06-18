@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faty's - Boutique d'Accessoires</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Faty's</h1>
+  </header>
+
+  <div class="grid-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3>Catégories</h3>
+      <div id="liste-categories"></div>
+        <!-- Bouton panier déplacé ici -->
+  <div style="margin-top: 20px; text-align: center;">
+    <a href="panier.html">
+      <button class="bouton-panier">🛒 Consulter le panier</button>
+    </a>
+  </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="slideshow" id="slideshow">
+        <img class="slide active" src="photo1.jpg" alt="Photo 1">
+        <img class="slide" src="photo2.jpg" alt="Photo 2">
+        <img class="slide" src="photo3.jpg" alt="Photo 3">
+        <img class="slide" src="photo4.jpg" alt="Photo 4">
+        <img class="slide" src="photo5.jpg" alt="Photo 5">
+        <img class="slide" src="photo6.jpg" alt="Photo 6">
+      </div>
+      <div id="dynamic-content"></div>
+    </main>
+  </div>
+
+  <footer>
+    <div class="footer-left">
+      <div class="contact-btn" onmouseover="toggleContacts(true)" onmouseout="toggleContacts(false)">
+        Contact
+        <div class="contact-options" id="contact-options">
+          <a href="https://wa.me/tonnumero">WhatsApp</a>
+          <a href="mailto:tonmail@example.com">Email</a>
+          <a href="https://instagram.com/ta_page">Instagram</a>
+          <a href="https://facebook.com/ta_page">Facebook</a>
+        </div>
+      </div>
+    </div>
+    
+    <p>© 2024 Faty's | Paiement à la livraison</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

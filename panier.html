@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Panier</title>
+  <style>
+  body {
+    font-family: 'Scheherazade New', serif;
+    margin: 0;
+    padding: 30px;
+    background: #FAD7C4;
+    color: #131114;
+    max-width: 800px;
+    margin: auto;
+    position: relative;
+  }
+
+  h1 {
+    text-align: center;
+    color: #560905;
+    margin-bottom: 25px;
+    font-size: 2rem;
+  }
+
+  .produit {
+    background: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 12px;
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .supprimer {
+    background: transparent;
+    color: #a00;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .total, .promo, .coordonnees, .confirmation {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    font-size: 0.95rem;
+  }
+
+  .total p, label, h3 {
+    color: #560905;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: #FFF3EC;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  button {
+    padding: 10px 16px;
+    background: #560905;
+    color: #FAD7C4;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: inherit;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background: #6d1c12;
+    transform: scale(1.02);
+  }
+
+  .coordonnees h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #560905;
+    padding-bottom: 6px;
+  }
+
+  #emoji-triste {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(250, 215, 196, 0.9);
+    color: #560905;
+    font-size: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    display: none;
+  }
+</style>
+
+</head>
+<body>
+
+  <div id="emoji-triste">😢</div>
+
+  <h1>Votre Panier</h1>
+  <div id="liste-produits"></div>
+
+  <div class="total">
+    <p><strong>Total :</strong> <span id="total"></span> DT</p>
+  </div>
+
+  <div class="promo">
+    <label>Code promo (optionnel) :</label>
+    <input type="text" id="codePromo">
+  </div>
+
+  <div class="coordonnees">
+    <h3>Coordonnées</h3>
+    <input type="text" id="nom" placeholder="Nom">
+    <input type="text" id="prenom" placeholder="Prénom">
+    <input type="tel" id="tel" placeholder="Téléphone">
+    <textarea id="adresse" placeholder="Adresse"></textarea>
+  </div>
+
+  <div class="confirmation">
+    <button onclick="confirmerCommande()">Confirmer la commande</button>
+  </div>
+
+  <script>
+    let produits = JSON.parse(localStorage.getItem('panier')) || [];
+    const liste = document.getElementById('liste-produits');
+    const totalEl = document.getElementById('total');
+    const emoji = document.getElementById('emoji-triste');
+
+    function afficherProduits() {
+      liste.innerHTML = '';
+      let total = 0;
+
+      produits.forEach((p, index) => {
+        const div = document.createElement('div');
+        div.className = 'produit';
+
+        const span = document.createElement('span');
+        span.textContent = `${p.nom} - ${p.prix} DT`;
+
+        const btnSupprimer = document.createElement('button');
+        btnSupprimer.textContent = '❌';
+        btnSupprimer.className = 'supprimer';
+        btnSupprimer.onclick = () => supprimerProduit(index);
+
+        div.appendChild(span);
+        div.appendChild(btnSupprimer);
+        liste.appendChild(div);
+
+        total += p.prix;
+      });
+
+      totalEl.textContent = total.toFixed(1);
+    }
+
+    function supprimerProduit(index) {
+      produits.splice(index, 1);
+      localStorage.setItem('panier', JSON.stringify(produits));
+      afficherProduits();
+
+      // Affiche l'emoji triste pendant 2 secondes
+      emoji.style.display = 'flex';
+      setTimeout(() => {
+        emoji.style.display = 'none';
+      }, 2000);
+    }
+
+    function confirmerCommande() {
+      const nom = document.getElementById('nom').value;
+      const prenom = document.getElementById('prenom').value;
+      const tel = document.getElementById('tel').value;
+      const adresse = document.getElementById('adresse').value;
+      const codePromo = document.getElementById('codePromo').value;
+
+      const reduction = codePromo === "PROMO10" ? 0.1 : 0;
+      const total = produits.reduce((acc, p) => acc + p.prix, 0);
+      const totalApres = total * (1 - reduction);
+
+      const message = `
+        Produits:\n${produits.map(p => `- ${p.nom} : ${p.prix} DT`).join('\n')}
+        Total avant promo: ${total} DT
+        Code promo: ${codePromo || "Aucun"}
+        Total après promo: ${totalApres.toFixed(2)} DT
+
+        Coordonnées:
+        Nom: ${nom} ${prenom}
+        Téléphone: ${tel}
+        Adresse: ${adresse}
+      `;
+
+      window.location.href = `mailto:votreadresse@mail.com?subject=Commande Bijoux&body=${encodeURIComponent(message)}`;
+    }
+
+    afficherProduits();
+  </script>
+</body>
+</html>
